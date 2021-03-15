@@ -8,6 +8,12 @@ hMatrix = np.array([[1, 1, 1, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0],
                     [0, 1, 1, 1, 1, 0, 1, 1, 0, 0, 0, 0, 0, 0, 1, 0],
                     [1, 1, 1, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1]])
 
+
+def asciitobin(char):
+    binlist = [int(x) for x in list('{0:0b}'.format(ord(char)))]
+    return [*[0] * (8 - len(binlist)), *binlist]
+
+
 if __name__ == '__main__':
     print(hMatrix)
 
