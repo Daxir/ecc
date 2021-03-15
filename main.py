@@ -19,10 +19,22 @@ def ascii_to_bin_list(char):
 
 
 def string_to_bin_list(string):
-    return flatten([char for char in map(ascii_to_bin_list, string)])
+    return [char for char in map(ascii_to_bin_list, string)]
+
+
+def encode(string):
+    return string_to_bin_list(string)
+
+
+def decode(bits):
+    # s = ""
+    # for sublist in bits:
+    #     s += chr(int(''.join(map(str, sublist[:8])), 2))
+    # return s
+    return ''.join([chr(int(''.join(map(str, sublist[:8])), 2)) for sublist in bits])
 
 
 if __name__ == '__main__':
-    print(string_to_bin_list('aaa'))
-    print(len(string_to_bin_list('aaa')) / 8)
+    x = [[0, 1, 1, 0, 0, 0, 0, 1], [0, 1, 1, 0, 0, 0, 1, 0], [0, 1, 1, 0, 0, 0, 1, 1]]
+    print(decode(x))
 
