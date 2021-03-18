@@ -1,4 +1,11 @@
 import numpy as np
+import os
+import sys
+from PyQt5.QtWidgets import QApplication, QLabel, QPushButton, QVBoxLayout, QWidget, QFileDialog, QGridLayout
+from PyQt5.QtGui import QPixmap
+from PyQt5 import QtGui, QtCore
+from PyQt5.QtGui import QCursor, QIcon
+from bitstring import ConstBitStream
 
 hMatrix = np.array([[1, 1, 1, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0],
                     [1, 1, 0, 0, 1, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0],
@@ -75,7 +82,7 @@ def correct(rMatrix, index, encodedMsg):
     return 0
 
 
-def string_to_bin_list(string): #to jest w zasadzie prepare
+def string_to_bin_list(string): #to jest w zasadzie prepare tak naprawde to nie
     return [char for char in map(ascii_to_bin_list, string)]
 
 
@@ -93,6 +100,96 @@ def decode(bits):
     return ''.join([chr(int(''.join(map(str, sublist[:8])), 2)) for sublist in bits])
 
 
+def write_bytes_file(binary_arrays, filename):
+    file = open(filename, "wb")
+    buffer = "0b"
+    for sub in binary_arrays:
+        buffer += ''.join([str(char) for char in sub])
+    file.write(ConstBitStream(buffer).bytes)
+    file.close()
+
+
+def write_bits_file(binary_arrays, filename):
+    file = open(filename, "w")
+    for sub in binary_arrays:
+        file.write(''.join([str(char) for char in sub]) + " ")
+    file.close()
+
+
+# Gui zone:
+widgets = {
+    "logo": [],
+    "button": []
+}
+
+names = ["step1.txt", "step2.txt", "step3.txt", "step4.txt"]
+file_openers = [lambda name=name: os.startfile(name) for name in names]
+
+
+def set_files():
+    for filename in names:
+        file = open(filename, "w")
+        file.close()
+
+
+def clear_files():
+    for filename in names:
+        os.remove(filename)
+
+
+def clear_widgets():
+    for widget in widgets:
+        if widgets[widget]:
+            widgets[widget][-1].hide()
+        for i in range(0, len(widgets[widget])):
+            widgets[widget].pop()
+
+
+def frame1(grid):
+    logo = QLabel()
+    logo.setPixmap(QPixmap("logo.png").scaled(357, 85))
+    logo.setAlignment(QtCore.Qt.AlignCenter)
+    logo.setStyleSheet("margin-top: 1px;")
+    widgets["logo"].append(logo)
+
+    button = QPushButton("In your area!")
+    button.setCursor(QCursor(QtCore.Qt.PointingHandCursor))
+    button.setStyleSheet(
+        '''
+        *{
+            border: 4px solid '#f5a7bc';
+            font-size: 15px;
+            color: 'white';
+            padding: 5px 0;
+            margin: 12px 100px;
+        }
+        *:hover{
+            background: '#f5a7bc';
+        }
+        '''
+    )
+
+    button.clicked.connect(lambda: file_openers[0]())
+    widgets["button"].append(button)
+
+    grid.addWidget(widgets["logo"][-1], 0, 0, 1, 2)
+    grid.addWidget(widgets["button"][-1], 1, 0, 1, 2)
+
+
+class Root(QWidget):
+    def __init__(self):
+        super().__init__()
+        set_files()
+        self.setWindowTitle("Monika Dyczka, Mateusz Roszkowski")
+        self.setFixedWidth(400)
+        self.setStyleSheet("background: #1a1918;")
+        self.setWindowIcon(QIcon("lisa.png"))
+
+    def closeEvent(self, event):
+        # clear_files()
+        return
+
+
 if __name__ == '__main__':
     message = "blackpink"
     converted = string_to_bin_list(message)
@@ -103,4 +200,13 @@ if __name__ == '__main__':
     print(encoded)
     print(decoded)
     print(checkpython(encoded))
+    # os.startfile("gui.txt")
 
+    # app = QApplication(sys.argv)
+    # window = Root()
+    # grid = QGridLayout()
+    # frame1(grid)
+    #
+    # window.setLayout(grid)
+    # window.show()
+    # sys.exit(app.exec())
