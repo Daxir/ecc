@@ -119,11 +119,16 @@ def write_bits_file(binary_arrays, filename):
 # Gui zone:
 widgets = {
     "logo": [],
-    "button": []
+    "button": [],
+    "next": []
 }
 
 names = ["step1.txt", "step2.txt", "step3.txt", "step4.txt"]
 file_openers = [lambda name=name: os.startfile(name) for name in names]
+
+
+def stage2():
+    clear_widgets()
 
 
 def set_files():
@@ -145,35 +150,87 @@ def clear_widgets():
             widgets[widget].pop()
 
 
+def create_button(text, l_margin, r_margin):
+    button = QPushButton(text)
+    button.setCursor(QCursor(QtCore.Qt.PointingHandCursor))
+    # button.setFixedWidth(150)
+    button.setStyleSheet(
+        "*{margin-left: " + str(l_margin) + "px;" +
+        "margin-right: " + str(r_margin) + "px;" +
+        '''
+            border: 4px solid '#f5a7bc';
+            font-size: 15px;
+            color: '#f5a7bc';
+            padding: 5px 10px;
+        }
+        *:hover{
+            background: '#f5a7bc';
+            color: '#1a1918';
+        }
+        '''
+    )
+    return button
+
+
 def frame1(grid):
+    logo = QLabel()
+    logo.setPixmap(QPixmap("logo.png").scaled(357, 85))
+    # logo.setText("Krok 1: Otwórz plik i wpisz do niego wiadomość")
+    logo.setAlignment(QtCore.Qt.AlignCenter)
+    logo.setStyleSheet(
+        '''
+        font-size: 15px;
+        color: 'white';
+        margin-bottom: 3px; 
+        '''
+    )
+    widgets["logo"].append(logo)
+
+    button = create_button("Otwórz plik", 10, 10)
+    button2 = create_button("Dalej", 10, 10)
+
+    # button = QPushButton("Open file")
+    # button.setCursor(QCursor(QtCore.Qt.PointingHandCursor))
+    # button.setStyleSheet(
+    #     '''
+    #     *{
+    #         border: 4px solid '#f5a7bc';
+    #         font-size: 15px;
+    #         color: 'white';
+    #         padding: 5px 0;
+    #         margin: 12px 100px;
+    #     }
+    #     *:hover{
+    #         background: '#f5a7bc';
+    #     }
+    #     '''
+    # )
+
+    button.clicked.connect(lambda: file_openers[0]())
+    button2.clicked.connect(stage2)
+    widgets["button"].append(button)
+    widgets["next"].append(button2)
+
+    grid.addWidget(widgets["logo"][-1], 0, 0, 1, 2)
+    grid.addWidget(widgets["button"][-1], 1, 0)
+    grid.addWidget(widgets["next"][-1], 1, 1)
+
+def frame2():
     logo = QLabel()
     logo.setPixmap(QPixmap("logo.png").scaled(357, 85))
     logo.setAlignment(QtCore.Qt.AlignCenter)
     logo.setStyleSheet("margin-top: 1px;")
     widgets["logo"].append(logo)
-
-    button = QPushButton("In your area!")
-    button.setCursor(QCursor(QtCore.Qt.PointingHandCursor))
-    button.setStyleSheet(
-        '''
-        *{
-            border: 4px solid '#f5a7bc';
-            font-size: 15px;
-            color: 'white';
-            padding: 5px 0;
-            margin: 12px 100px;
-        }
-        *:hover{
-            background: '#f5a7bc';
-        }
-        '''
-    )
-
-    button.clicked.connect(lambda: file_openers[0]())
+    button = create_button("Open file", 10, 10)
+    button2 = create_button("Next", 10, 10)
+    button.clicked.connect(lambda: file_openers[1]())
+    button2.clicked.connect(stage2)
     widgets["button"].append(button)
+    widgets["next"].append(button2)
 
     grid.addWidget(widgets["logo"][-1], 0, 0, 1, 2)
-    grid.addWidget(widgets["button"][-1], 1, 0, 1, 2)
+    grid.addWidget(widgets["button"][-1], 1, 0)
+    grid.addWidget(widgets["next"][-1], 1, 1)
 
 
 class Root(QWidget):
@@ -202,11 +259,11 @@ if __name__ == '__main__':
     print(checkpython(encoded))
     # os.startfile("gui.txt")
 
-    # app = QApplication(sys.argv)
-    # window = Root()
-    # grid = QGridLayout()
-    # frame1(grid)
-    #
-    # window.setLayout(grid)
-    # window.show()
-    # sys.exit(app.exec())
+    app = QApplication(sys.argv)
+    window = Root()
+    grid = QGridLayout()
+    frame1(grid)
+
+    window.setLayout(grid)
+    window.show()
+    sys.exit(app.exec())
