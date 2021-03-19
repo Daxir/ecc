@@ -59,7 +59,7 @@ def checkpython(coded):
     for block in coded:
         for vec in hMatrix:
             checking_arr.append(np.dot(np.array(block), vec) % 2)
-    return checking_arr
+    return np.array([checking_arr[i:i + 8] for i in range(0, len(checking_arr), 8)])
 
 
 def correct(rMatrix, index, encodedMsg):
@@ -259,11 +259,11 @@ if __name__ == '__main__':
     print(checkpython(encoded))
     # os.startfile("gui.txt")
 
-    app = QApplication(sys.argv)
-    window = Root()
-    grid = QGridLayout()
-    frame1(grid)
-
-    window.setLayout(grid)
-    window.show()
-    sys.exit(app.exec())
+    # app = QApplication(sys.argv)
+    # window = Root()
+    # grid = QGridLayout()
+    # frame1(grid)
+    #
+    # window.setLayout(grid)
+    # window.show()
+    # sys.exit(app.exec())
