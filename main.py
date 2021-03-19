@@ -63,20 +63,19 @@ def checkpython(coded):
 
 
 def correct(rMatrix, index, encodedMsg):
-    temp = [8]
+    temp = [None]*8
     for i in range(16):
-        j = i + 1
-        for j in range(16):
+        for j in range(i+1, 16):
             for k in range(8):
                 temp[k] = hMatrix[k][i] ^ hMatrix[k][j]
-            if temp == rMatrix:
+            if temp == rMatrix.tolist():
                 encodedMsg[index][i] ^= 1
                 encodedMsg[index][j] ^= 1
                 return 2
     for i in range(16):
         for j in range(8):
             temp[j] = hMatrix[j][i]
-        if temp == rMatrix:
+        if temp == rMatrix.tolist():
             encodedMsg[index][i] ^= 1
             return 1
     return 0
@@ -97,6 +96,7 @@ def encode(string):
 
 
 def decode(bits):
+    print("Bits", bits)
     return ''.join([chr(int(''.join(map(str, sublist[:8])), 2)) for sublist in bits])
 
 
@@ -115,6 +115,13 @@ def write_bits_file(binary_arrays, filename):
         file.write(''.join([str(char) for char in sub]) + " ")
     file.close()
 
+def funfun(encodedMsg):
+    checkarray = checkpython(encodedMsg)
+    errors = 0
+    for i in range(len(encodedMsg)):
+        if np.sum(checkarray[i]) > 0:
+            errors += correct(checkarray[i], i, encodedMsg)
+    print(errors)
 
 # Gui zone:
 widgets = {
@@ -243,7 +250,7 @@ class Root(QWidget):
         self.setWindowIcon(QIcon("lisa.png"))
 
     def closeEvent(self, event):
-        # clear_files()
+        clear_files()
         return
 
 
@@ -251,12 +258,21 @@ if __name__ == '__main__':
     message = "blackpink"
     converted = string_to_bin_list(message)
     encoded = encode(message)
-    decoded = decode(encoded)
+
     print(message)
     print(converted)
     print(encoded)
+    encoded[0][0] = 1
+    encoded[5][6] = 1
+    encoded[7][8] = 1
+    encoded[7][9] = 0
+    print(encoded)
+    print(funfun(encoded))
+    decoded = decode(encoded)
     print(decoded)
-    print(checkpython(encoded))
+    print(encoded)
+
+
     # os.startfile("gui.txt")
 
     # app = QApplication(sys.argv)
