@@ -26,10 +26,10 @@ def ascii_to_bin_list(char):
 # tworzy listę wektorów sprawdzających i zwraca je jako listę list binarnych
 def check(coded):
     checking_arr = []
-    for block in coded:
-        for vec in hMatrix:
-            checking_arr.append(np.dot(np.array(block), vec) % 2)
-    return np.array([checking_arr[i:i + 8] for i in range(0, len(checking_arr), 8)])
+    for block in coded:  # dla każdego bloku zakodowanej wiadomości
+        for vec in hMatrix:  # pobieramy wiersz z macierzy
+            checking_arr.append(np.dot(np.array(block), vec) % 2)  # i tworzymy wektor sprawdzający sumą modulo 2
+    return np.array([checking_arr[i:i + 8] for i in range(0, len(checking_arr), 8)])  # dzielimy na części
 
 
 def correct(r_matrix, index, encoded_msg):
@@ -59,12 +59,12 @@ def string_to_bin_list(string):
 # dodaje bity parzystości do wiadomości i zwraca jako tablicę tablic binarnych
 # (dla wiadomosci 8 bitowej, 8 bitów parzystości)
 def encode(string):
-    before_encoding = string_to_bin_list(string)
+    before_encoding = string_to_bin_list(string)  # zamiana na bity
     copy = string_to_bin_list(string)
-    for iterator, sublist in enumerate(before_encoding):
-        for i in range(8):
+    for iterator, sublist in enumerate(before_encoding):  # przechodzimy po bitach wiadomosci
+        for i in range(8):  # i po wierszach macierzy
             parity = np.dot(np.array(sublist), hMatrix[i][:8])
-            copy[iterator].append(parity % 2)
+            copy[iterator].append(parity % 2)  # obliczyamy sumę modulo 2
     return copy
 
 
