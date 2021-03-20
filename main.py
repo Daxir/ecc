@@ -6,14 +6,7 @@ from PyQt5 import QtCore
 from PyQt5.QtGui import QCursor, QIcon
 from bitstring import ConstBitStream
 
-# hMatrix = np.array([[1, 1, 1, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0],
-#                     [1, 1, 0, 0, 1, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0],
-#                     [1, 0, 1, 0, 1, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0],
-#                     [0, 1, 0, 1, 0, 1, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0],
-#                     [1, 1, 1, 0, 1, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0],
-#                     [1, 0, 0, 1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0],
-#                     [0, 1, 1, 1, 1, 0, 1, 1, 0, 0, 0, 0, 0, 0, 1, 0],
-#                     [1, 1, 1, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1]])
+
 hMatrix = np.array([[1, 0, 1, 1, 0, 1, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0],
                     [0, 1, 0, 1, 1, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0],
                     [0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0],
@@ -24,11 +17,13 @@ hMatrix = np.array([[1, 0, 1, 1, 0, 1, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0],
                     [0, 1, 1, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1]])
 
 
+# zamienia znak w tablicę binarną, dodaje padding zerami z lewej strony, żeby każdy znak był ośmiobitowy
 def ascii_to_bin_list(char):
     bin_list = [int(x) for x in list('{0:0b}'.format(ord(char)))]
     return [*[0] * (8 - len(bin_list)), *bin_list]
 
 
+# tworzy listę wektorów sprawdzających i zwraca je jako listę list binarnych
 def check(coded):
     checking_arr = []
     for block in coded:
@@ -56,10 +51,13 @@ def correct(r_matrix, index, encoded_msg):
     return 0
 
 
+# zamienia stringa w listę list binarnych dla każdego znaku
 def string_to_bin_list(string):
     return [char for char in map(ascii_to_bin_list, string)]
 
 
+# dodaje bity parzystości do wiadomości i zwraca jako tablicę tablic binarnych
+# (dla wiadomosci 8 bitowej, 8 bitów parzystości)
 def encode(string):
     before_encoding = string_to_bin_list(string)
     copy = string_to_bin_list(string)
@@ -70,10 +68,12 @@ def encode(string):
     return copy
 
 
+# przyjmuje tablicę tablic binarnych i zamienia je na string z wiadomością
 def decode(bits):
     return ''.join([chr(int(''.join(map(str, sublist[:8])), 2)) for sublist in bits])
 
 
+# zapisuje listę list binarnych do pliku jako bajty
 def write_bytes_file(binary_arrays, filename):
     file = open(filename, "wb")
     buffer = "0b"
@@ -83,6 +83,7 @@ def write_bytes_file(binary_arrays, filename):
     file.close()
 
 
+# zapisuje listę list binarnych do pliku jako bity
 def write_bits_file(binary_arrays, filename):
     file = open(filename, "w")
     for sub in binary_arrays:
@@ -90,6 +91,7 @@ def write_bits_file(binary_arrays, filename):
     file.close()
 
 
+# odczytuje bajty z pliku
 def read_bytes_file(filename):
     file = open(filename, "r")
     mess = file.read()
@@ -97,6 +99,7 @@ def read_bytes_file(filename):
     return mess
 
 
+# odczytuje string binarny z pliku
 def read_bits_file(filename):
     file = open(filename, "r")
     mess = file.read()
