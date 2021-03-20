@@ -6,7 +6,7 @@ from PyQt5 import QtCore
 from PyQt5.QtGui import QCursor, QIcon
 from bitstring import ConstBitStream
 
-#macierz H spelniajaca warunki:
+# macierz H spelniajaca warunki:
 # 1. odleglosc hamminga wynoszaca minimum 5
 # 2. brak kolumny zerowej, kolumny sie nie powtarzaja
 # 3. brak kolumny, ktora jest suma dwoch innych kolumn
@@ -34,19 +34,20 @@ def check(coded):
             checking_arr.append(np.dot(np.array(block), vec) % 2)  # i tworzymy wektor sprawdzający sumą modulo 2
     return np.array([checking_arr[i:i + 8] for i in range(0, len(checking_arr), 8)])  # dzielimy na części
 
+
 # metoda korygująca bledy, pierwszy parametr to tablica zwracana przez metode check(), rmatrix jest 8 elementowy
 def correct(r_matrix, index, encoded_msg):
-    temp = [None]*8
-    #dla dwoch bledow: szukanie indeksu iloczynu kolumn ktory jest identyczny z tablica r_matrix
-    for i in range(16): #kolumna w ktorej sie znajdujemy
-        for j in range(i+1, 16): #kolumna z ktora sumujemy
-            for k in range(8): #elementy kolumn
+    temp = [None] * 8
+    # dla dwoch bledow: szukanie indeksu iloczynu kolumn ktory jest identyczny z tablica r_matrix
+    for i in range(16):  # kolumna w ktorej sie znajdujemy
+        for j in range(i + 1, 16):  # kolumna z ktora sumujemy
+            for k in range(8):  # elementy kolumn
                 temp[k] = hMatrix[k][i] ^ hMatrix[k][j]
             if temp == r_matrix.tolist():
-                encoded_msg[index][i] ^= 1 #korekcja bledu za pomoca XOR
+                encoded_msg[index][i] ^= 1  # korekcja bledu za pomoca XOR
                 encoded_msg[index][j] ^= 1
                 return 2
-    #szukanie indeksu kolumny ktora jest identyczna z tablica r_matrix
+    # szukanie indeksu kolumny ktora jest identyczna z tablica r_matrix
     for i in range(16):
         for j in range(8):
             temp[j] = hMatrix[j][i]
@@ -112,13 +113,15 @@ def read_bits_file(filename):
     file.close()
     return list(map(lambda x: [int(c) for c in x], mess.split(sep=' ')))
 
-#wywoływanie funkcji sprawdzającej check i poprawianie bledow w wiadomosci
+
+# wywoływanie funkcji sprawdzającej check i poprawianie bledow w wiadomosci
 def correct_err(encoded_msg):
-    checkarray = check(encoded_msg) #checkarray jest lista list
+    checkarray = check(encoded_msg)  # checkarray jest lista list
     errors = 0
     for i in range(len(encoded_msg)):
-        if np.sum(checkarray[i]) > 0: #sprawdzamy czy wiersz w checkarray nie jest samymi zerami
-            errors += correct(checkarray[i], i, encoded_msg) #jesli tak to zwiekszamy liczbe errorow i poprawiamy wiadomosc
+        if np.sum(checkarray[i]) > 0:  # sprawdzamy czy wiersz w checkarray nie jest samymi zerami
+            errors += correct(checkarray[i], i,
+                              encoded_msg)  # jesli tak to zwiekszamy liczbe errorow i poprawiamy wiadomosc
     return errors
 
 
@@ -249,7 +252,6 @@ class Root(QWidget):
         self.setWindowTitle("Monika Dyczka, Mateusz Roszkowski")
         self.setFixedWidth(400)
         self.setStyleSheet("background: #1a1918;")
-        self.setWindowIcon(QIcon("lisa.png"))
 
     def closeEvent(self, event):
         clear_files()
