@@ -3,21 +3,21 @@ import os
 import sys
 from PyQt5.QtWidgets import QApplication, QLabel, QPushButton, QWidget, QGridLayout
 from PyQt5 import QtCore
-from PyQt5.QtGui import QCursor, QIcon
+from PyQt5.QtGui import QCursor
 from bitstring import ConstBitStream
 
 # macierz H spelniajaca warunki:
 # 1. odleglosc hamminga wynoszaca minimum 5
 # 2. brak kolumny zerowej, kolumny sie nie powtarzaja
 # 3. brak kolumny, ktora jest suma dwoch innych kolumn
-hMatrix = np.array([[1, 0, 1, 1, 0, 1, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0],
-                    [0, 1, 0, 1, 1, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0],
-                    [0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0],
-                    [1, 0, 0, 0, 1, 1, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0],
-                    [1, 0, 1, 0, 1, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0],
-                    [0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0],
-                    [0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0],
-                    [0, 1, 1, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1]])
+hMatrix = np.array([[1, 1, 1, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0],
+                    [1, 1, 0, 0, 1, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0],
+                    [1, 0, 1, 0, 1, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0],
+                    [0, 1, 0, 1, 0, 1, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0],
+                    [1, 1, 1, 0, 1, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0],
+                    [1, 0, 0, 1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0],
+                    [0, 1, 1, 1, 1, 0, 1, 1, 0, 0, 0, 0, 0, 0, 1, 0],
+                    [1, 1, 1, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1]])
 
 
 # zamienia znak w tablicę binarną, dodaje padding zerami z lewej strony, żeby każdy znak był ośmiobitowy
@@ -65,11 +65,10 @@ def string_to_bin_list(string):
 # dodaje bity parzystości do wiadomości i zwraca jako tablicę tablic binarnych
 # (dla wiadomosci 8 bitowej, 8 bitów parzystości)
 def encode(string):
-    before_encoding = string_to_bin_list(string)  # zamiana na bity
-    copy = string_to_bin_list(string)
+    copy, before_encoding = string_to_bin_list(string), string_to_bin_list(string)  # zamiana na bity
     for iterator, sublist in enumerate(before_encoding):  # przechodzimy po bitach wiadomosci
-        for i in range(8):  # i po wierszach macierzy
-            parity = np.dot(np.array(sublist), hMatrix[i][:8])
+        for vector in hMatrix:  # i po wierszach macierzy
+            parity = np.dot(np.array(sublist), vector[:8])
             copy[iterator].append(parity % 2)  # obliczyamy sumę modulo 2
     return copy
 
